@@ -1,0 +1,158 @@
+<%- include('partials/authHeader') %>
+
+    <body>
+        <%- include('partials/aside') %>
+
+            <main class="main-wrapper">
+
+                <!-- Header -->
+                <header class="header">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-5 col-6">
+                                <div class="header-left d-flex align-items-center">
+                                    <div class="menu-toggle-btn mr-15">
+                                        <button id="menu-toggle" class="main-btn primary-btn btn-hover">
+                                            <i class="lni lni-chevron-left me-2"></i> Menu
+                                        </button>
+                                    </div>
+
+                                    <div class="header-search d-none d-md-flex">
+                                        <form action="#">
+                                            <input type="text" placeholder="Search..." />
+                                            <button>
+                                                <i class="lni lni-search-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-7 col-md-7 col-6">
+                                <div class="header-right d-flex justify-content-end align-items-center">
+
+                                    <div class="dropdown">
+
+                                        <a href="#" class="text-decoration-none text-dark" id="profileDropdown"
+                                            role="button" data-bs-toggle="dropdown">
+
+                                            <div class="profile-box">
+                                                <div class="profile-info">
+                                                    <div class="info d-flex align-items-center">
+
+                                                        <div class="image me-2">
+                                                            <img src="<%= user.image ? '/' + user.image : '/assets/images/profile/profile-image.png' %>"
+                                                                alt="profile">
+                                                        </div>
+
+                                                        <div class="d-none d-sm-block">
+                                                            <h6 class="fw-600 mb-0 text-capitalize">
+                                                                <%= user.name %>
+                                                            </h6>
+
+                                                            <small class="text-muted">
+                                                                <%= user.email %>
+                                                            </small>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </a>
+
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2">
+                                            <li>
+                                                <a class="dropdown-item py-2 rounded-3" href="/dashboard/profile">
+                                                    <i class="lni lni-user me-2"></i>
+                                                    My Profile
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item py-2 rounded-3" href="/auth/change-password">
+                                                    <i class="lni lni-lock-alt me-2"></i>
+                                                    Change Password
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+
+                                            <li>
+                                                <a class="dropdown-item logout-item" href="/auth/logout">
+                                                    <i class="lni lni-exit"></i>
+                                                    <span>Logout</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Add Category Section -->
+                <section class="section mt-5">
+                    <div class="container-fluid">
+
+                        <div class="row">
+                            <div class="col-12">
+
+                                <div class="card-style">
+
+                                    <div class="title mb-4">
+                                        <h4>Add New Category</h4>
+                                        <p class="text-sm text-medium">
+                                            Create a new category for your blogs.
+                                        </p>
+                                    </div>
+
+                                    <% if (errorMsg) { %>
+                                        <div class="alert alert-danger">
+                                            <%= errorMsg %>
+                                        </div>
+                                        <% } %>
+
+                                            <form action="/category/addCategory" method="POST">
+
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <div class="input-style-1">
+                                                            <label>Category Name</label>
+
+                                                            <input type="text" name="categoryName"
+                                                                placeholder="Enter category name" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <button type="submit"
+                                                            class="main-btn primary-btn btn-hover w-100">
+                                                            Add Category
+                                                        </button>
+                                                    </div>
+
+                                                </div>
+
+                                            </form>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </main>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+    </html>

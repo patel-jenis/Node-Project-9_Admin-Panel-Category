@@ -1,0 +1,89 @@
+<!-- ======== sidebar-nav start =========== -->
+<aside class="sidebar-nav-wrapper">
+
+    <div class="navbar-logo">
+        <a href="/dashboard">
+            <img src="/assets/images/logo/logo.svg" alt="Logo">
+        </a>
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <ul class="list-unstyled px-2">
+
+            <!-- Dashboard -->
+            <li class="mb-2">
+                <a href="/dashboard" class="sidebar-link active">
+                    <i class="lni lni-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li class="sidebar-title mt-4">
+                Categories
+            </li>
+
+            <li class="nav-item">
+
+                <a class="sidebar-link d-flex justify-content-between align-items-center py-2 px-3 mb-3"
+                    data-bs-toggle="collapse" href="#categoryMenu" role="button" aria-expanded="false">
+
+                    <div class="d-flex align-items-center">
+                        <i class="lni lni-folder me-2"></i>
+                        <span>Category</span>
+                    </div>
+
+                    <i class="lni lni-chevron-down arrow-icon"></i>
+                </a>
+
+                <div class="collapse" id="categoryMenu">
+
+                    <ul class="submenu list-unstyled">
+
+                        <li class="mb-2">
+                            <a href="/category/add" class="sidebar-link sub-link">
+                                <i class="lni lni-circle-plus me-1"></i>
+                                Add Category
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/category/view-Category" class="sidebar-link sub-link">
+                                <i class="lni lni-eye me-1"></i>
+                                View Categories
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </li>
+
+            <!-- Account -->
+            <li class="sidebar-title mt-4">
+                Account
+            </li>
+
+            <li class="mb-2">
+                <a href="/dashboard/profile" class="sidebar-link sub-link">
+                    <i class="lni lni-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+
+            <li class="mb-2">
+                <a href="/auth/logOut" class="sidebar-link logout-link">
+                    <i class="lni lni-exit"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</aside>
+
+<div class="overlay"></div>
+<!-- ======== sidebar-nav end =========== -->
