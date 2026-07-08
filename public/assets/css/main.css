@@ -6878,3 +6878,8 @@ only screen and (min-width: 768px) and (max-width: 991px),
 .lni.lni-folder {
   font-size: 15px;
 }
+
+#confirmPassword.is-invalid {
+  background-image: none !important;
+  padding-right: 3rem;
+}

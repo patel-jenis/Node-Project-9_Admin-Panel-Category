@@ -163,6 +163,84 @@ const changedPasswordController = async (req, res) => {
         console.log("Error:", err);
     }
 };
+
+const forgotPasswordController = (req, res) => {
+    res.render("forgot-password", {
+        errorMsg: null
+    });
+};
+
+const checkUserController = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.render("forgot-password", {
+                errorMsg: "No account found with this email."
+            });
+        }
+
+        res.render("reset-password", {
+            userId: user._id,
+            errorMsg: null
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        res.render("forgot-password", {
+            errorMsg: "Something went wrong. Please try again."
+        });
+    }
+};
+
+const updatePasswordController = async (req, res) => {
+    try {
+
+        const { userId, password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            return res.render("reset-password", {
+                userId,
+                errorMsg: "Passwords do not match."
+            });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.redirect("/auth/forgot-password");
+        }
+
+        const isSamePassword = await bcrypt.compare(password, user.password);
+
+        if (isSamePassword) {
+            return res.render("reset-password", {
+                userId,
+                errorMsg: "New password cannot be the same as your old password."
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        await User.findByIdAndUpdate(userId, {
+            password: hashedPassword
+        });
+
+        return res.redirect("/auth/signIn");
+
+    } catch (error) {
+        console.log(error);
+
+        return res.render("reset-password", {
+            userId: req.body.userId,
+            errorMsg: "Something went wrong."
+        });
+    }
+};
+
 module.exports = {
     authController,
     signUpAuthController,
@@ -171,5 +249,8 @@ module.exports = {
     loginController,
     logOutController,
     changePasswordController,
-    changedPasswordController
+    changedPasswordController,
+    forgotPasswordController,
+    checkUserController,
+    updatePasswordController
 }

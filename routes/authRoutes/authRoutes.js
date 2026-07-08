@@ -1,5 +1,5 @@
 const express = require('express');
-const { authController, signUpAuthController, signInAuthController, registerController, loginController, logOutController, changePasswordController, changedPasswordController } = require('../../controllers/authControllers/authController');
+const { authController, signUpAuthController, signInAuthController, registerController, loginController, logOutController, changePasswordController, changedPasswordController, forgotPasswordController, checkUserController, updatePasswordController } = require('../../controllers/authControllers/authController');
 const passport = require('../../middlewares/passport');
 const { isLoggedIn, loginCheck } = require('../../middlewares/authenticate');
 
@@ -12,6 +12,9 @@ authRoutes.post("/register", registerController);
 authRoutes.post("/login", loginController);
 authRoutes.get("/logOut", loginCheck, logOutController);
 authRoutes.get("/change-password", loginCheck, changePasswordController);
-authRoutes.post("/changed-password", changedPasswordController);
+authRoutes.post("/changed-password", loginCheck, changedPasswordController);
+authRoutes.get("/forgot-password", forgotPasswordController);
+authRoutes.post("/forgot-password", checkUserController);
+authRoutes.post("/reset-password", updatePasswordController);
 
 module.exports = authRoutes;
