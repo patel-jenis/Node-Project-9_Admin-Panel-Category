@@ -1,6 +1,7 @@
 const passport = require('../../middlewares/passport');
 const User = require('../../models/userModels/userModel');
 const bcrypt = require('bcrypt');
+const otpGenerator = require("otp-generator");
 
 let errorMsg = "";
 
@@ -172,6 +173,7 @@ const forgotPasswordController = (req, res) => {
 
 const checkUserController = async (req, res) => {
     try {
+
         const { email } = req.body;
 
         const user = await User.findOne({ email });
@@ -182,17 +184,140 @@ const checkUserController = async (req, res) => {
             });
         }
 
-        res.render("reset-password", {
+        // Generate 6-digit OTP
+        const otp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+            digits: true
+        });
+
+        // OTP Expiry (5 Minutes)
+        const otpExpire = Date.now() + (5 * 60 * 1000);
+
+        // Save OTP & Expiry
+        user.otp = otp;
+        user.otpExpire = otpExpire;
+
+        await user.save();
+
+        console.log("======================================");
+        console.log("Password Reset OTP :", otp);
+        console.log("Valid For : 5 Minutes");
+        console.log("======================================");
+
+        return res.render("verify-otp", {
             userId: user._id,
+            otpExpire: user.otpExpire.getTime(),
             errorMsg: null
         });
 
     } catch (error) {
+
         console.log(error);
 
-        res.render("forgot-password", {
+        return res.render("forgot-password", {
             errorMsg: "Something went wrong. Please try again."
         });
+
+    }
+};
+
+const verifyOtpController = async (req, res) => {
+    try {
+
+        const { userId, otp } = req.body;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.redirect("/auth/forgot-password");
+        }
+
+        if (user.otp !== otp) {
+            return res.render("verify-otp", {
+                userId,
+                otpExpire: user.otpExpire.getTime(),
+                errorMsg: "Invalid OTP"
+            });
+        }
+
+        if (user.otpExpire < Date.now()) {
+            return res.render("verify-otp", {
+                userId,
+                otpExpire: user.otpExpire.getTime(),
+                errorMsg: "OTP has expired"
+            });
+        }
+
+        // Optional: Clear OTP after successful verification
+        user.otp = null;
+        user.otpExpire = null;
+        await user.save();
+
+        return res.render("reset-password", {
+            userId,
+            errorMsg: null
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        const user = await User.findById(req.body.userId);
+
+        return res.render("verify-otp", {
+            userId: req.body.userId,
+            otpExpire: user ? user.otpExpire : null,
+            errorMsg: "Something went wrong."
+        });
+
+    }
+};
+
+const resendOtpController = async (req, res) => {
+    try {
+
+        const { userId } = req.body;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.redirect("/auth/forgot-password");
+        }
+
+        // Generate New OTP
+        const otp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+            digits: true
+        });
+
+        // Update OTP & Expiry
+        user.otp = otp;
+        user.otpExpire = new Date(Date.now() + 5 * 60 * 1000);
+
+        await user.save();
+
+        // Console (Replace with Email later)
+        console.log("======================================");
+        console.log("New Password Reset OTP :", otp);
+        console.log("Valid For : 5 Minutes");
+        console.log("======================================");
+
+        return res.render("verify-otp", {
+            userId: user._id,
+            otpExpire: user.otpExpire.getTime(),
+            errorMsg: null
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return res.redirect("/auth/forgot-password");
+
     }
 };
 
@@ -252,5 +377,7 @@ module.exports = {
     changedPasswordController,
     forgotPasswordController,
     checkUserController,
-    updatePasswordController
+    updatePasswordController,
+    verifyOtpController,
+    resendOtpController
 }

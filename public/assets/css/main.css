@@ -6883,3 +6883,32 @@ only screen and (min-width: 768px) and (max-width: 991px),
   background-image: none !important;
   padding-right: 3rem;
 }
+
+.otp-input {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  transition: .25s;
+}
+
+.otp-input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .15);
+}
+
+#resendBtn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+@media(max-width:576px) {
+
+  .otp-input {
+    width: 42px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+}
