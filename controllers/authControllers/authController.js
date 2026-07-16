@@ -2,6 +2,7 @@ const passport = require('../../middlewares/passport');
 const User = require('../../models/userModels/userModel');
 const bcrypt = require('bcrypt');
 const otpGenerator = require("otp-generator");
+const transporter = require('../../nodemailer/nodemailer');
 
 let errorMsg = "";
 
@@ -201,10 +202,56 @@ const checkUserController = async (req, res) => {
 
         await user.save();
 
-        console.log("======================================");
-        console.log("Password Reset OTP :", otp);
-        console.log("Valid For : 5 Minutes");
-        console.log("======================================");
+        // Send OTP Email
+        await transporter.sendMail({
+            from: '"Admin Panel" <jenispatel2409@gmail.com>',
+            to: user.email,
+            subject: "Password Reset OTP",
+            html: `
+                <div style="font-family: Arial, sans-serif; padding:20px;">
+                    
+                    <h2 style="color:#0d6efd;">
+                        Password Reset Request
+                    </h2>
+
+                    <p>Hello <b>${user.name}</b>,</p>
+
+                    <p>
+                        We received a request to reset your password.
+                    </p>
+
+                    <p>
+                        Your OTP is:
+                    </p>
+
+                    <h1 style="
+                        letter-spacing:6px;
+                        color:#0d6efd;
+                        background:#f5f5f5;
+                        display:inline-block;
+                        padding:10px 20px;
+                        border-radius:8px;
+                    ">
+                        ${otp}
+                    </h1>
+
+                    <p>
+                        This OTP is valid for <b>5 minutes</b>.
+                    </p>
+
+                    <p>
+                        If you didn't request this password reset, you can safely ignore this email.
+                    </p>
+
+                    <hr>
+
+                    <small>
+                        Admin Panel
+                    </small>
+
+                </div>
+            `
+        });
 
         return res.render("verify-otp", {
             userId: user._id,
@@ -294,17 +341,55 @@ const resendOtpController = async (req, res) => {
             digits: true
         });
 
-        // Update OTP & Expiry
+        // Update OTP & Expiry (5 Minutes)
         user.otp = otp;
         user.otpExpire = new Date(Date.now() + 5 * 60 * 1000);
 
         await user.save();
 
-        // Console (Replace with Email later)
-        console.log("======================================");
-        console.log("New Password Reset OTP :", otp);
-        console.log("Valid For : 5 Minutes");
-        console.log("======================================");
+        // Send OTP Email
+        await transporter.sendMail({
+            from: '"Admin Panel" <jenispatel2409@gmail.com>',
+            to: user.email,
+            subject: "Your New Password Reset OTP",
+            html: `
+                <div style="font-family:Arial,sans-serif;padding:20px;">
+                    <h2 style="color:#0d6efd;">Password Reset OTP</h2>
+
+                    <p>Hello <b>${user.name}</b>,</p>
+
+                    <p>Your new OTP for password reset is:</p>
+
+                    <div style="
+                        display:inline-block;
+                        background:#f5f5f5;
+                        border:1px solid #ddd;
+                        padding:12px 25px;
+                        border-radius:8px;
+                        font-size:30px;
+                        font-weight:bold;
+                        letter-spacing:6px;
+                        color:#0d6efd;
+                    ">
+                        ${otp}
+                    </div>
+
+                    <p style="margin-top:20px;">
+                        This OTP is valid for <b>5 minutes</b>.
+                    </p>
+
+                    <p>
+                        If you didn't request this, please ignore this email.
+                    </p>
+
+                    <hr>
+
+                    <p style="font-size:12px;color:#777;">
+                        Admin Panel
+                    </p>
+                </div>
+            `
+        });
 
         return res.render("verify-otp", {
             userId: user._id,
