@@ -96,63 +96,133 @@
                     </div>
                 </header>
 
-                <!-- Add Category Section -->
-                <section class="section mt-5">
-                    <div class="container-fluid">
+                <% if(messages.success){ %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= messages.success %>
 
-                        <div class="row">
-                            <div class="col-12">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
 
-                                <div class="card-style">
+                        <% if(messages.error){ %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <%= messages.error %>
 
-                                    <div class="title mb-4">
-                                        <h4>Add New Category</h4>
-                                        <p class="text-sm text-medium">
-                                            Create a new category for your blogs.
-                                        </p>
-                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            <% } %>
 
-                                    <% if (errorMsg) { %>
-                                        <div class="alert alert-danger">
-                                            <%= errorMsg %>
-                                        </div>
-                                        <% } %>
+                                <!-- Add Category Section -->
+                                <section class="section mt-5">
+                                    <div class="container-fluid">
 
-                                            <form action="/category/addCategory" method="POST">
+                                        <div class="row">
+                                            <div class="col-12">
 
-                                                <div class="row">
+                                                <div class="card-style">
 
-                                                    <div class="col-md-12">
-                                                        <div class="input-style-1">
-                                                            <label>Category Name</label>
+                                                    <div class="title mb-4">
+                                                        <h4>Add New Category</h4>
+                                                        <p class="text-sm text-medium">
+                                                            Create a new category for your blogs.
+                                                        </p>
+                                                    </div>
 
-                                                            <input type="text" name="categoryName"
-                                                                placeholder="Enter category name" required>
+                                                    <!-- <% if (errorMsg) { %>
+                                                        <div class="alert alert-danger">
+                                                            <%= errorMsg %>
                                                         </div>
-                                                    </div>
+                                                        <% } %> -->
 
-                                                    <div class="col-md-12">
-                                                        <button type="submit"
-                                                            class="main-btn primary-btn btn-hover w-100">
-                                                            Add Category
-                                                        </button>
-                                                    </div>
+                                                            <form action="/category/addCategory" method="POST">
+
+                                                                <div class="row">
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="input-style-1">
+                                                                            <label>Category Name</label>
+
+                                                                            <input type="text" id="categoryName"
+                                                                                name="categoryName" class="form-control"
+                                                                                placeholder="Enter category name"
+                                                                                minlength="2" maxlength="50" required>
+
+                                                                            <small id="categoryError"
+                                                                                class="text-danger"></small>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <button type="submit"
+                                                                            class="main-btn primary-btn btn-hover w-100">
+                                                                            Add Category
+                                                                        </button>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </form>
 
                                                 </div>
 
-                                            </form>
+                                            </div>
+                                        </div>
 
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
+                                    </div>
+                                </section>
 
             </main>
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+            <script>
+                const form = document.querySelector("form");
+                const categoryInput = document.getElementById("categoryName");
+                const categoryError = document.getElementById("categoryError");
+
+                function validateCategory() {
+                    const value = categoryInput.value.trim();
+
+                    if (value.length === 0) {
+                        categoryInput.classList.remove("is-invalid");
+                        categoryError.textContent = "";
+                        return false;
+                    }
+
+                    if (value.length < 2) {
+                        categoryInput.classList.add("is-invalid");
+                        categoryError.textContent = "Category name must be at least 2 characters.";
+                        return false;
+                    }
+
+                    categoryInput.classList.remove("is-invalid");
+                    categoryError.textContent = "";
+                    return true;
+                }
+
+                categoryInput.addEventListener("input", validateCategory);
+
+                form.addEventListener("submit", function (e) {
+
+                    if (!validateCategory()) {
+                        e.preventDefault();
+                    }
+
+                });
+
+                document.addEventListener("DOMContentLoaded", () => {
+
+                    const alerts = document.querySelectorAll(".alert");
+
+                    alerts.forEach(alert => {
+                        setTimeout(() => {
+                            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                            bsAlert.close();
+                        }, 3000);
+                    });
+
+                });
+            </script>
     </body>
 
     </html>

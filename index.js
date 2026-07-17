@@ -6,6 +6,7 @@ const db = require('./config/db/db');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const expressSession = require('express-session');
+const flash = require("express-flash");
 
 db();
 
@@ -20,6 +21,8 @@ server.use("/uploads", express.static("uploads"));
 server.use(expressSession({ secret: 'My-app', resave: false, saveUninitialized: false }))
 server.use(passport.initialize());
 server.use(passport.session());
+
+server.use(flash());
 
 server.use("/", routes);
 

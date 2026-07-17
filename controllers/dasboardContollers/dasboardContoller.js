@@ -1,6 +1,7 @@
 const fs = require('fs');
 const User = require("../../models/userModels/userModel");
 const Category = require("../../models/categoryModels/categoryModel");
+const Product = require('../../models/productModels/productModel');
 
 const dasboardContoller = async (req, res) => {
     try {
@@ -37,10 +38,14 @@ const addCategoryContoller = async (req, res) => {
             categoryName: req.body.categoryName,
         });
 
+        req.flash("success", "Category added successfully.");
+
         res.redirect("/category/view-Category");
 
     } catch (err) {
         if (err.code === 11000) {
+
+            req.flash("error", "Category already exists.");
             return res.render("addCategory", {
                 user: req.user,
                 errorMsg: "Category already exists."
@@ -48,6 +53,7 @@ const addCategoryContoller = async (req, res) => {
         }
 
         console.log("Error:", err);
+        req.flash("error", "Something went wrong.");
 
         return res.render("addCategory", {
             user: req.user,
@@ -77,11 +83,14 @@ const updateController = async (req, res) => {
             categoryName: req.body.categoryName,
         });
 
+        req.flash("success", "Category updated successfully.");
         res.redirect("/category/view-Category");
 
     } catch (err) {
         if (err.code === 11000) {
             const category = await Category.findById(req.body.id);
+
+            req.flash("error", "Category already exists.");
 
             return res.render("editCategory", {
                 category,
@@ -90,18 +99,30 @@ const updateController = async (req, res) => {
             });
         }
 
-        console.log("Error:", err);
+        req.flash("error", "Something went wrong.");
         res.send("Something Went Wrong...");
     }
 };
 
 const deleteController = async (req, res) => {
     try {
-        await Category.findByIdAndDelete(req.params.id);
-        res.redirect("/category/view-Category");
-    } catch (err) {
-        console.log("Error:", err);
-        res.send("Something Went Wrong...");
+
+        const categoryId = req.params.id;
+
+        // Delete all products of this category
+        await Product.deleteMany({
+            category: categoryId
+        });
+
+        // Delete category
+        await Category.findByIdAndDelete(categoryId);
+
+        req.flash("success", "Category and all related products deleted successfully.");
+        return res.redirect("/category/view-Category");
+
+    } catch (error) {
+        req.flash("error", "Something went wrong.");
+        return res.redirect("/category/view-Category");
     }
 };
 

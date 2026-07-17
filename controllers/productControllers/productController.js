@@ -58,6 +58,8 @@ const addProductController = async (req, res) => {
             productImage: req.file.path,
         });
 
+        req.flash("success", "Product added successfully.");
+
         return res.redirect("/product/view-product");
 
     } catch (error) {
@@ -112,6 +114,7 @@ const deleteProductController = async (req, res) => {
 
         await Product.findByIdAndDelete(id);
 
+        req.flash("success", "Product deleted successfully.");
         res.redirect("/product/view-product");
 
     } catch (err) {
@@ -145,6 +148,8 @@ const updateProductController = async (req, res) => {
             await Product.findByIdAndUpdate(req.body.id, req.body);
 
         }
+
+        req.flash("success", "Product updated successfully.");
 
         res.redirect("/product/view-product");
 
