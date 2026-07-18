@@ -1,3 +1,4 @@
+const path = require("path");
 const Category = require("../../models/categoryModels/categoryModel");
 const Product = require("../../models/productModels/productModel");
 const fs = require("fs");
@@ -5,7 +6,8 @@ const fs = require("fs");
 const viewProductController = async (req, res) => {
     try {
 
-        const products = await Product.find();
+        // const products = await Product.find().populate("category", "categoryName");
+        const products = await Product.find().populate({ path: "category", select: "categoryName" });
 
         res.render("view-product", {
             user: req.user,
@@ -163,14 +165,13 @@ const updateProductController = async (req, res) => {
 const viewSingleProductController = async (req, res) => {
     try {
 
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id).populate({ path: "category", select: "categoryName" });
 
-        const category = await Category.findById(product.category);
+        // const category = await Category.findById(product.category);
 
         res.render("viewSingleProduct", {
             user: req.user,
             product,
-            category,
         });
 
     } catch (err) {
